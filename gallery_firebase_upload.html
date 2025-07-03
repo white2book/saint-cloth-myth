@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>收藏展示 | Saint Cloth Myth</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #0f172a;
+      color: #f1f5f9;
+    }
+    input[type="file"]::file-selector-button {
+      background-color: #facc15;
+      color: black;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin-right: 1rem;
+      cursor: pointer;
+    }
+  </style>
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+</head>
+<body class="font-sans">
+
+  <!-- 導覽 -->
+  <header class="bg-black bg-opacity-80 sticky top-0 z-50 px-4 py-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-yellow-400">收藏展示</h1>
+    <a href="index.html" class="text-sm text-gray-300 hover:text-yellow-400">← 返回首頁</a>
+  </header>
+
+  <!-- 上傳區塊 -->
+  <section class="max-w-xl mx-auto mt-10 p-6 bg-gray-800 rounded-xl shadow-lg">
+    <h2 class="text-xl font-semibold mb-4 text-yellow-300">上傳你的收藏照片</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" name="image" accept="image/*" required />
+      <button type="submit" class="bg-yellow-400 text-black font-semibold px-4 py-2 rounded hover:bg-yellow-300">
+        上傳
+      </button>
+    </form>
+    <p id="uploadMessage" class="mt-4 text-sm"></p>
+  </section>
+
+  <!-- 展示牆 -->
+  <section class="max-w-6xl mx-auto py-10 px-4">
+    <h2 class="text-2xl font-bold mb-6 text-yellow-300">粉絲收藏展示牆</h2>
+    <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <!-- 圖片將動態插入 -->
+    </div>
+  </section>
+
+  <script>
+    // ⛳ 初始化 Firebase（請將下方內容改成你自己的設定）
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "your-project.firebaseapp.com",
+      projectId: "your-project-id",
+      storageBucket: "your-project-id.appspot.com",
+      messagingSenderId: "xxxxxxx",
+      appId: "1:xxxxxxxx:web:xxxxxx"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const storage = firebase.storage();
+
+    const uploadForm = document.getElementById('uploadForm');
+    const uploadMessage = document.getElementById('uploadMessage');
+    const gallery = document.getElementById('gallery');
+
+    uploadForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const fileInput = uploadForm.querySelector('input[type="file"]');
+      const file = fileInput.files[0];
+
+      if (!file || !file.type.startsWith('image/')) {
+        uploadMessage.textContent = "請選擇有效的圖片檔案。";
+        return;
+      }
+
+      const fileName = `${Date.now()}_${file.name}`;
+      const storageRef = storage.ref('uploads/' + fileName);
+      const uploadTask = storageRef.put(file);
+
+      uploadTask.on(
+        'state_changed',
+        null,
+        (error) => {
+          uploadMessage.textContent = '上傳失敗：' + error;
+        },
+        () => {
+          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            const img = document.createElement('img');
+            img.src = downloadURL;
+            img.className = "w-full h-48 object-cover rounded";
+            gallery.prepend(img);
+            uploadMessage.textContent = "圖片已上傳並儲存於 Firebase！";
+            fileInput.value = '';
+          });
+        }
+      );
+    });
+  </script>
+
+</body>
+</html>

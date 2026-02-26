@@ -1,118 +1,301 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>收藏展示 | Saint Cloth Myth</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    body {
-      background: #0f172a;
-      color: #f1f5f9;
-    }
-    input[type="file"]::file-selector-button {
-      background-color: #facc15;
-      color: black;
-      border: none;
-      padding: 0.5rem 1rem;
-      margin-right: 1rem;
-      cursor: pointer;
-    }
-  </style>
-  <!-- Firebase CDN -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-</head>
-<body class="font-sans">
-
-  <!-- 導覽 -->
-  <header class="bg-black bg-opacity-80 sticky top-0 z-50 px-4 py-4 flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-yellow-400">收藏展示</h1>
-    <a href="index.html" class="text-sm text-gray-300 hover:text-yellow-400">← 返回首頁</a>
-  </header>
-
-  <!-- 上傳區塊 -->
-  <section class="max-w-xl mx-auto mt-10 p-6 bg-gray-800 rounded-xl shadow-lg">
-    <h2 class="text-xl font-semibold mb-4 text-yellow-300">上傳你的收藏照片</h2>
-    <form id="uploadForm" enctype="multipart/form-data">
-      <input type="file" name="image" accept="image/*" required />
-      <button type="submit" class="bg-yellow-400 text-black font-semibold px-4 py-2 rounded hover:bg-yellow-300">
-        上傳
-      </button>
-    </form>
-    <p id="uploadMessage" class="mt-4 text-sm"></p>
-  </section>
-
-  <!-- 展示牆 -->
-  <section class="max-w-6xl mx-auto py-10 px-4">
-    <h2 class="text-2xl font-bold mb-6 text-yellow-300">粉絲收藏展示牆</h2>
-    <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <!-- 圖片將動態插入 -->
-    </div>
-  </section>
-
-  <script>
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBRbwCaJYXMeaBc6De0nd60vFsn1FUZueo",
-  authDomain: "ssphoto-9cec3.firebaseapp.com",
-  projectId: "ssphoto-9cec3",
-  storageBucket: "ssphoto-9cec3.firebasestorage.app",
-  messagingSenderId: "238707254649",
-  appId: "1:238707254649:web:fd8aa0df2fd0d121b7bba8",
-  measurementId: "G-L0K5QHKLE8"
-};
-/*
-    // ⛳ 初始化 Firebase（請將下方內容改成你自己的設定）
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "your-project.firebaseapp.com",
-      projectId: "your-project-id",
-      storageBucket: "your-project-id.appspot.com",
-      messagingSenderId: "xxxxxxx",
-      appId: "1:xxxxxxxx:web:xxxxxx"
-    };
-    */
-    firebase.initializeApp(firebaseConfig);
-    const storage = firebase.storage();
-
-    const uploadForm = document.getElementById('uploadForm');
-    const uploadMessage = document.getElementById('uploadMessage');
-    const gallery = document.getElementById('gallery');
-
-    uploadForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const fileInput = uploadForm.querySelector('input[type="file"]');
-      const file = fileInput.files[0];
-
-      if (!file || !file.type.startsWith('image/')) {
-        uploadMessage.textContent = "請選擇有效的圖片檔案。";
-        return;
-      }
-
-      const fileName = `${Date.now()}_${file.name}`;
-      const storageRef = storage.ref('uploads/' + fileName);
-      const uploadTask = storageRef.put(file);
-
-      uploadTask.on(
-        'state_changed',
-        null,
-        (error) => {
-          uploadMessage.textContent = '上傳失敗：' + error;
-        },
-        () => {
-          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-            const img = document.createElement('img');
-            img.src = downloadURL;
-            img.className = "w-full h-48 object-cover rounded";
-            gallery.prepend(img);
-            uploadMessage.textContent = "圖片已上傳並儲存於 Firebase！";
-            fileInput.value = '';
-          });
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作品欣賞 | 聖衣神話</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js" type="module"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        myth: { dark: '#0f172a', gold: '#fbbf24', bronze: '#b45309', panel: '#1e293b' }
+                    }
+                }
+            }
         }
-      );
-    });
-  </script>
+    </script>
+    <style>
+        body { background-color: #0f172a; background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, transparent 70%); background-attachment: fixed; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="text-gray-200 antialiased min-h-screen flex flex-col">
 
+    <nav class="bg-myth-dark/80 backdrop-blur-md border-b border-myth-gold/20 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-star text-myth-gold"></i>
+                <span class="font-bold text-white">聖衣神話 <span class="text-myth-gold">| 作品欣賞</span></span>
+            </div>
+            <div id="authStatus" class="text-xs text-gray-500">正在檢查連線狀態...</div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full flex flex-col lg:flex-row gap-8">
+        <aside class="w-full lg:w-1/3">
+            <div id="formContainer" class="bg-myth-panel rounded-2xl p-6 border border-gray-700/50 sticky top-24">
+                <h2 id="formTitle" class="text-xl font-bold text-myth-gold mb-6 border-b border-gray-700 pb-2">發布收藏</h2>
+                <form id="uploadForm" class="space-y-4">
+                    <input type="hidden" id="editingId" value="">
+                    <div>
+                        <label class="block text-sm mb-2">上傳照片</label>
+                        <label for="imageInput" class="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-600 border-dashed rounded-xl cursor-pointer bg-gray-800/50 hover:border-myth-gold overflow-hidden relative">
+                            <div id="previewPrompt" class="text-center">
+                                <i class="fa-solid fa-image text-2xl mb-2 text-gray-500"></i>
+                                <p class="text-xs">點擊選擇照片 (請小於 1MB)</p>
+                            </div>
+                            <img id="imagePreview" class="absolute inset-0 w-full h-full object-cover hidden">
+                        </label>
+                        <input id="imageInput" type="file" class="hidden" accept="image/*" />
+                    </div>
+                    <input type="text" id="titleInput" required placeholder="作品標題" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-myth-gold">
+                    <textarea id="descInput" rows="3" placeholder="描述內容" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 resize-none text-white focus:outline-none focus:border-myth-gold"></textarea>
+                    <button type="submit" id="submitBtn" class="w-full bg-myth-gold text-gray-900 font-bold py-3 rounded-lg hover:brightness-110 disabled:opacity-50 transition-all">發布作品</button>
+                </form>
+            </div>
+        </aside>
+
+        <section class="w-full lg:w-2/3">
+            <div id="galleryGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 資料載入中 -->
+                <div class="col-span-full text-center py-20 text-gray-500">
+                    <i class="fa-solid fa-spinner fa-spin mr-2"></i>正在同步雲端展示櫃...
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <button id="closeLightbox" class="absolute top-6 right-6 text-white text-3xl"><i class="fa-solid fa-xmark"></i></button>
+        <div class="flex flex-col items-center max-w-full">
+            <img id="lightboxImg" src="" class="max-h-[85vh] max-w-full rounded-lg shadow-2xl object-contain">
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase 初始化數據
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        let currentUser = null;
+        let unsubscribeGallery = null;
+
+        // 1. 認證處理 (遵循 RULE 3)
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Auth error:", error);
+                document.getElementById('authStatus').textContent = "雲端連線失敗";
+            }
+        }
+
+        // 2. 監聽數據 (遵循 RULE 1 & 2)
+        function listenToGallery(user) {
+            if (!user) return;
+            
+            // 使用正確的路徑架構: /artifacts/{appId}/public/data/{collectionName}
+            const galleryCol = collection(db, 'artifacts', appId, 'public', 'data', 'gallery');
+            
+            // 清除之前的監聽器
+            if (unsubscribeGallery) unsubscribeGallery();
+
+            unsubscribeGallery = onSnapshot(galleryCol, (snapshot) => {
+                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderGallery(data);
+            }, (error) => {
+                console.error("Firestore error (Permission?):", error);
+                const grid = document.getElementById('galleryGrid');
+                grid.innerHTML = `<div class="col-span-full text-center py-20 text-red-400">讀取失敗：權限不足或網路錯誤</div>`;
+            });
+        }
+
+        function renderGallery(data) {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+            
+            if (data.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500 font-serif">尚無作品分享，成為第一個發布的人吧！</div>`;
+                return;
+            }
+
+            // 在前端進行排序以符合 RULE 2 (不使用 orderBy)
+            data.sort((a, b) => {
+                const timeA = a.createdAt?.seconds || 0;
+                const timeB = b.createdAt?.seconds || 0;
+                return timeB - timeA;
+            });
+
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-myth-panel rounded-xl overflow-hidden border border-gray-700/50 hover:border-myth-gold/30 transition-all group fade-in flex flex-col';
+                card.innerHTML = `
+                    <div class="relative h-52 bg-gray-900 cursor-zoom-in overflow-hidden" onclick="window.openLightbox('${item.imageUrl}')">
+                        <img src="${item.imageUrl}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.src='https://placehold.co/400x300/1e293b/fbbf24?text=無法載入圖片'">
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <i class="fa-solid fa-magnifying-glass-plus text-white text-2xl"></i>
+                        </div>
+                        <div class="absolute top-2 right-2 flex gap-2" onclick="event.stopPropagation()">
+                            <button onclick="window.deletePost('${item.id}')" class="bg-red-900/80 p-2 rounded-full text-white hover:bg-red-600 transition-colors shadow-lg">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4 flex-grow">
+                        <h4 class="font-bold text-white group-hover:text-myth-gold transition-colors">${item.title}</h4>
+                        <p class="text-[10px] text-gray-500 mb-2">${item.createdAt ? new Date(item.createdAt.seconds * 1000).toLocaleString() : '剛發布'}</p>
+                        <p class="text-sm text-gray-400 line-clamp-2 leading-relaxed">${item.description || '無描述內容'}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // 3. 上傳與輔助功能
+        const form = document.getElementById('uploadForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) {
+                alert("請等待連線完成後再試一次");
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            const file = document.getElementById('imageInput').files[0];
+            const title = document.getElementById('titleInput').value.trim();
+            const description = document.getElementById('descInput').value.trim();
+
+            if (!file) {
+                alert("請選擇照片");
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "上傳中...";
+
+            try {
+                const base64Data = await fileToBase64(file);
+                
+                // Firestore 文檔限制 1MB
+                if (base64Data.length > 1300000) { 
+                    throw new Error("圖片太大（請壓縮至 1MB 以下）");
+                }
+
+                const galleryCol = collection(db, 'artifacts', appId, 'public', 'data', 'gallery');
+                await addDoc(galleryCol, {
+                    title,
+                    description,
+                    imageUrl: base64Data,
+                    userId: currentUser.uid,
+                    createdAt: serverTimestamp()
+                });
+
+                form.reset();
+                document.getElementById('imagePreview').classList.add('hidden');
+                document.getElementById('previewPrompt').classList.remove('hidden');
+            } catch (err) {
+                console.error(err);
+                alert("儲存失敗：" + err.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "發布作品";
+            }
+        });
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        document.getElementById('imageInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = ev.target.result;
+                    preview.classList.remove('hidden');
+                    document.getElementById('previewPrompt').classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        window.deletePost = async (id) => {
+            if (!currentUser) return;
+            if (confirm("確定要從雲端刪除這件收藏展示嗎？")) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'gallery', id);
+                    await deleteDoc(docRef);
+                } catch (err) {
+                    alert("刪除失敗，請檢查網路連線");
+                }
+            }
+        };
+
+        window.openLightbox = (url) => {
+            const lb = document.getElementById('lightbox');
+            const img = document.getElementById('lightboxImg');
+            img.src = url;
+            lb.classList.remove('hidden');
+            setTimeout(() => lb.classList.add('opacity-100'), 10);
+            document.body.style.overflow = 'hidden';
+        };
+
+        const closeBtn = document.getElementById('closeLightbox');
+        const lightboxOverlay = document.getElementById('lightbox');
+        
+        const hideLightbox = () => {
+            lightboxOverlay.classList.remove('opacity-100');
+            setTimeout(() => {
+                lightboxOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        };
+
+        closeBtn.onclick = hideLightbox;
+        lightboxOverlay.onclick = (e) => { if(e.target === lightboxOverlay) hideLightbox(); };
+
+        // 4. 初始化認證監聽 (遵循 RULE 3)
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                document.getElementById('authStatus').textContent = "雲端連線：已同步";
+                listenToGallery(user);
+            } else {
+                document.getElementById('authStatus').textContent = "重新連線中...";
+                initAuth();
+            }
+        });
+
+        // 啟動身份驗證
+        initAuth();
+
+    </script>
 </body>
 </html>

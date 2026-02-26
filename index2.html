@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>聖衣神話 | Saint Cloth Myth - 宇宙傳說</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --gold-primary: #f59e0b;
+      --gold-light: #fbce7c;
+    }
+
+    /* 宇宙星空背景動畫 */
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #f0f0f0;
+      overflow-x: hidden;
+      font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    }
+
+    .space-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+      overflow: hidden;
+    }
+
+    /* 模擬星星 */
+    .stars-container {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background-image: 
+        radial-gradient(1px 1px at 25% 35%, #fff, transparent),
+        radial-gradient(2px 2px at 50% 10%, #fff, transparent),
+        radial-gradient(1px 1px at 10% 80%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 85% 20%, #fff, transparent),
+        radial-gradient(2px 2px at 70% 60%, #fff, transparent),
+        radial-gradient(1px 1px at 30% 90%, #fff, transparent);
+      background-size: 800px 800px;
+      animation: spaceMove 120s linear infinite;
+      opacity: 0.5;
+    }
+
+    /* 星雲效果 */
+    .nebula {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 50%, rgba(70, 0, 150, 0.1), transparent 40%),
+                  radial-gradient(circle at 70% 20%, rgba(0, 50, 100, 0.1), transparent 40%);
+      filter: blur(50px);
+    }
+
+    @keyframes spaceMove {
+      from { transform: translate(0, 0); }
+      to { transform: translate(-10%, -10%); }
+    }
+
+    /* 玻璃擬態效果 */
+    .glass-effect {
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-link {
+      position: relative;
+      transition: color 0.3s;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--gold-primary);
+      transition: width 0.3s;
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* 黃金光暈文字 */
+    .gold-text-glow {
+      color: var(--gold-light);
+      text-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+    }
+
+    /* 卡片懸停動畫 */
+    .hover-card {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .hover-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      border-color: var(--gold-primary);
+      box-shadow: 0 10px 30px rgba(245, 158, 11, 0.2);
+    }
+
+    /* 漸變文字 */
+    .text-gradient-gold {
+      background: linear-gradient(to bottom, #fff7ad 0%, #ffa700 50%, #ff5b00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- 背景層 -->
+  <div class="space-background">
+    <div class="stars-container"></div>
+    <div class="nebula"></div>
+  </div>
+
+  <!-- 導覽列 -->
+  <header class="sticky top-0 z-50 glass-effect border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.8)]">
+          <span class="text-black font-black text-xs">SAINT</span>
+        </div>
+        <h1 class="text-2xl font-bold tracking-widest gold-text-glow">聖衣神話</h1>
+      </div>
+      <nav class="hidden md:flex space-x-8 text-sm font-medium uppercase tracking-wider">
+        <a href="series.html" class="nav-link hover:text-amber-400">系列介紹</a>
+        <a href="gallery.html" class="nav-link hover:text-amber-400">收藏展示</a>
+        <a href="buy.html" class="nav-link hover:text-amber-400">購買指南</a>
+        <a href="news.html" class="nav-link hover:text-amber-400">最新消息</a>
+        <a href="about.html" class="nav-link hover:text-amber-400">關於本站</a>
+      </nav>
+      <!-- 手機端選單按鈕 (僅示意) -->
+      <div class="md:hidden text-amber-500">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主視覺區 (Hero Section) -->
+  <section class="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+    <!-- 這裡可以放置您原本的 Banner 圖片作為背景，但改為更融合的處理 -->
+    <div class="absolute inset-0 z-0">
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black z-10"></div>
+      <img src="https://white2book.github.io/saint-cloth-myth/assets/images/banner.jpg" 
+           alt="Banner" 
+           class="w-full h-full object-cover opacity-40 scale-105"
+           onerror="this.style.display='none'">
+    </div>
+    
+    <div class="relative z-20 text-center px-4">
+      <p class="text-amber-400 tracking-[0.5em] mb-4 text-sm font-light animate-pulse">燃烧吧！小宇宙</p>
+      <h2 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter text-gradient-gold">
+        探索你的聖衣傳說
+      </h2>
+      <div class="w-24 h-1 bg-amber-500 mx-auto rounded-full shadow-[0_0_10px_#f59e0b]"></div>
+      <p class="mt-8 text-gray-300 max-w-lg mx-auto leading-relaxed font-light">
+        超越時空的精緻工藝，重現奧林匹斯山下的神話光輝。<br>
+        這裡是你與星座連結的開始。
+      </p>
+    </div>
+  </section>
+
+  <!-- 黃金聖衣集結區塊 (亮點展示) -->
+  <section class="relative py-24 overflow-hidden">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-amber-500/30 group">
+          <img src="https://white2book.github.io/saint-cloth-myth/assets/images/gold-saints-epic.jpg" 
+               alt="黃金聖衣集結" 
+               class="w-full h-auto transition-transform duration-700 group-hover:scale-110">
+          <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+        </div>
+        <div class="space-y-6">
+          <h2 class="text-4xl font-bold text-amber-300">黃金聖衣 · 集結</h2>
+          <div class="h-px w-full bg-gradient-to-r from-amber-500 to-transparent"></div>
+          <p class="text-lg text-gray-300 leading-relaxed italic">
+            「群星閃耀，守護雅典娜的傳奇鬥士。」
+          </p>
+          <p class="text-gray-400">
+            收錄從 1980 年代至今，BANDAI 聖衣神話系列的巅峰之作。從 EX 系列到神聖衣，完美呈現金屬鎧甲的厚重感與聖鬥士的英姿。
+          </p>
+          <button class="px-8 py-3 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-full transition-all shadow-[0_5px_15px_rgba(217,119,6,0.4)]">
+            查看黃金系列
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 快速導航卡片區 -->
+  <section class="py-20 relative">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- 卡片 1 -->
+        <a href="series.html" class="hover-card glass-effect p-8 rounded-3xl text-center flex flex-col items-center">
+          <div class="w-16 h-16 mb-6 flex items-center justify-center text-amber-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-amber-200 mb-2">系列介紹</h3>
+          <p class="text-gray-400 text-sm">從青銅到神聖衣<br>完整分類詳解</p>
+        </a>
+
+        <!-- 卡片 2 -->
+        <a href="gallery.html" class="hover-card glass-effect p-8 rounded-3xl text-center flex flex-col items-center">
+          <div class="w-16 h-16 mb-6 flex items-center justify-center text-amber-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-amber-200 mb-2">收藏展示</h3>
+          <p class="text-gray-400 text-sm">極致擺拍藝術<br>全球收藏家分享</p>
+        </a>
+
+        <!-- 卡片 3 -->
+        <a href="buy.html" class="hover-card glass-effect p-8 rounded-3xl text-center flex flex-col items-center">
+          <div class="w-16 h-16 mb-6 flex items-center justify-center text-amber-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-amber-200 mb-2">購買指南</h3>
+          <p class="text-gray-400 text-sm">精明入手建議<br>版本真偽辨別</p>
+        </a>
+
+        <!-- 卡片 4 -->
+        <a href="news.html" class="hover-card glass-effect p-8 rounded-3xl text-center flex flex-col items-center">
+          <div class="w-16 h-16 mb-6 flex items-center justify-center text-amber-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-amber-200 mb-2">最新消息</h3>
+          <p class="text-gray-400 text-sm">魂展即時速報<br>每月發售情報</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="relative z-10 py-12 border-t border-white/5 bg-black/80">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <div class="flex justify-center space-x-6 mb-8">
+        <span class="text-amber-500/50 hover:text-amber-500 transition cursor-pointer">FB</span>
+        <span class="text-amber-500/50 hover:text-amber-500 transition cursor-pointer">IG</span>
+        <span class="text-amber-500/50 hover:text-amber-500 transition cursor-pointer">YT</span>
+      </div>
+      <p class="text-sm text-gray-500 uppercase tracking-widest">
+        &copy; 2025 聖衣神話站點 | 一個專為熱愛星矢的粉絲建立的聖域
+      </p>
+      <p class="mt-2 text-[10px] text-gray-600">非官方網站，所有權利歸 BANDAI SPIRITS 及車田正美所有</p>
+    </div>
+  </footer>
+
+</body>
+</html>
